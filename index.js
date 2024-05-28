@@ -1,33 +1,50 @@
 import express from "express";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+
+// Load environment variables from .env file
+dotenv.config();
+
 const app = express();
-app.use(express.urlencoded({extended:true}))
+const dbHOST = process.env.DBHOST;
+const PORT = process.env.PORT || 5000;
+
+app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
-mongoose.connect('mongodb+srv://allinone1creater:yZcMFEN7xScca50R@webdevmastry.qdmg1eg.mongodb.net/').then(()=>{
-    console.log('mongodb is connected done............')
-})
 
+mongoose.connect(dbHOST, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => {
+  console.log('MongoDB is connected');
+})
+.catch((error) => {
+  console.error('Error connecting to MongoDB:', error);
+});
 
-const userschemas = mongoose.Schema({
-    name:String,
-    email:String,
-    password:String   
-})
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  password: String
+});
 
-const usermodel = mongoose.model('authnew', userschemas);
-app.get('/',(req, res)=>{
-    res.render('index')
-})
+const UserModel = mongoose.model('authnewdataisthe', userSchema);
 
-app.get('/login',(req,res)=>{
-    res.render('login')
-})
-app.post('/register',async(req,res)=>{
-    const {name,email,password} = req.body
-    const registervalue  = await usermodel.create(name,email,password);
+app.get('/', (req, res) => {
+  res.render('index');
+});
 
-    res.redirect('/login')
-})
-app.listen(5000,()=>{
-    console.log('server is running on port 5000')
-})
+app.get('/login', (req, res) => {
+  res.render('login');
+});
+
+app.post('/register', async (req, res) => {
+  const { name, email, password } = req.body;
+  await UserModel.create({ name, email, password });
+  res.redirect('/login');
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

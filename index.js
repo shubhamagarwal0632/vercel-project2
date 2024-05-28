@@ -2,10 +2,9 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
-// Load environment variables from .env file
 dotenv.config();
-
 const app = express();
+
 const dbHOST = process.env.DBHOST;
 const PORT = process.env.PORT || 5000;
 
@@ -29,7 +28,7 @@ const userSchema = new mongoose.Schema({
   password: String
 });
 
-const UserModel = mongoose.model('authnewdataisthe', userSchema);
+const UserModel = mongoose.model('authnew', userSchema);
 
 app.get('/', (req, res) => {
   res.render('index');
